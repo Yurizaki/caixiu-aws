@@ -8,13 +8,13 @@ import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AwsDynamoDbVocabulary {
 
@@ -104,31 +104,19 @@ public class AwsDynamoDbVocabulary {
         }
     }
 
-    public void getAllItems() {
+    public List<Vocabulary> getAllItems() {
+        Iterator<Vocabulary> scanResults =
+                dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Vocabulary.class))
+                .scan()
+                .items()
+                .iterator();
 
-//        GetItemResponse getItemResponse = dynamoDbClient.getItem(GetItemRequest.builder()
-//                .tableName(tableName)
-//                .projectionExpression("*")
-//                .build());
-
-        ScanRequest scanRequest = ScanRequest.builder()
-                .tableName(tableName)
-                .build();
-
-        ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
-
-
-        Map<String, AttributeValue> items = scanResponse.items().get(0);
-
-        for (String key1 : items.keySet()) {
-            System.out.format("%s: %s\n", key1, items.get(key1).toString());
+        List<Vocabulary> vocabularies = new ArrayList<>();
+        while(scanResults.hasNext()) {
+            vocabularies.add(scanResults.next());
         }
 
-        Gson gson = new Gson();
-        Type gsonType = new TypeToken<HashMap>() {
-        }.getType();
-        String gsonString = gson.toJson(items, gsonType);
-        System.out.println(gsonString);
+        return vocabularies; //new Gson().toJson(vocabularies);
     }
 
 

@@ -10,6 +10,8 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,7 +54,8 @@ class AwsDynamoDbVocabularyTest {
 
     @Test
     public void testGetAllItems_pass_if_all_items() {
-        awsDynamoDbVocabulary.getAllItems();
+        assertEquals(Collections.singletonList(new Vocabulary("你好", "你好", "nihao")),
+                awsDynamoDbVocabulary.getAllItems());
     }
 
     @Test

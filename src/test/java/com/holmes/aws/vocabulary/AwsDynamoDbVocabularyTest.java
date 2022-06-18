@@ -3,14 +3,22 @@ package com.holmes.aws.vocabulary;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AwsDynamoDbVocabularyTest {
 
     static DynamoDbClient dynamoDbClient;
+
+    static DynamoDbWaiter dynamoDbWaiter;
 
     static AwsDynamoDbVocabulary awsDynamoDbVocabulary;
 
@@ -20,6 +28,8 @@ class AwsDynamoDbVocabularyTest {
                 .region(Region.EU_WEST_2)
                 .build();
 
+        dynamoDbWaiter = dynamoDbClient.waiter();
+
         awsDynamoDbVocabulary = new AwsDynamoDbVocabulary(dynamoDbClient);
     }
 
@@ -27,6 +37,7 @@ class AwsDynamoDbVocabularyTest {
     static void tearDown() {
         dynamoDbClient.close();
         awsDynamoDbVocabulary.close();
+        dynamoDbWaiter.close();
     }
 
     @Test
@@ -43,4 +54,35 @@ class AwsDynamoDbVocabularyTest {
     public void testGetAllItems_pass_if_all_items() {
         awsDynamoDbVocabulary.getAllItems();
     }
+
+    @Test
+    public void testAddVocabularyItem_pass_if_item_add() {
+        Vocabulary vocabulary = new Vocabulary("你好", "你好", "nihao");
+
+        try {
+            PutItemResponse putItemResponse = awsDynamoDbVocabulary.addNewVocabulary(vocabulary);
+            assertTrue(putItemResponse.sdkHttpResponse().isSuccessful());
+        }
+        catch (DynamoDbException ex) {
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
+    }
+
+    @Test
+    public void testDeleteVocabularyItem_pass_if_item_deleted() {
+        String name = "你好";
+        DeleteItemResponse deleteItemResponse = awsDynamoDbVocabulary.deleteVocabulary(name);
+        assertTrue(deleteItemResponse.sdkHttpResponse().isSuccessful());
+    }
+
+    @Test
+    public void testGetVocabularyItem_pass_if_item_retrieved() {
+        Vocabulary vocabulary = new Vocabulary("你好", "nihao");
+
+        GetItemResponse getItemResponse = awsDynamoDbVocabulary.getVocabulary("你好");
+
+        System.out.println(getItemResponse.item().get("pinyin"));;
+    }
+
 }

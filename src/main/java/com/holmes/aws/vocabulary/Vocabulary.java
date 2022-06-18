@@ -5,7 +5,6 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @DynamoDbBean
@@ -55,6 +54,23 @@ public class Vocabulary {
         this.pinyin = pinyin;
     }
 
+    public PutItemRequest getRequest(String table) {
+        HashMap<String, AttributeValue> mappy = new HashMap<>();
+        mappy.put("k_vocab_id", AttributeValue.builder().s(this.chinese).build());
+        mappy.put("chinese", AttributeValue.builder().s(this.chinese).build());
+        mappy.put("pinyin", AttributeValue.builder().s(this.pinyin).build());
+
+        return PutItemRequest.builder()
+                .tableName(table)
+                .item(mappy)
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return "{" + this.k_vocab_id + ", " + this.chinese + ", " + this.pinyin + "}";
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj.getClass() == Vocabulary.class) {
@@ -63,18 +79,5 @@ public class Vocabulary {
                     && this.pinyin.equals(vocabularyCompare.pinyin);
         }
         return false;
-    }
-
-    public PutItemRequest getRequest(String table) {
-        HashMap<String, AttributeValue> mappy = new HashMap<>();
-        mappy.put("k_vocab_id", AttributeValue.builder().s(this.chinese).build());
-        mappy.put("chinese", AttributeValue.builder().s(this.chinese).build());
-        mappy.put("pinyin", AttributeValue.builder().s(this.pinyin).build());
-//        mappy.put("k_vocab_id", AttributeValue.builder().s(String.valueOf(System.currentTimeMillis())).build());
-
-        return PutItemRequest.builder()
-                .tableName(table)
-                .item(mappy)
-                .build();
     }
 }

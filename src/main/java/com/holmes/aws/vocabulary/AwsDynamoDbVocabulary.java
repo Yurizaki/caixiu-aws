@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -83,35 +84,28 @@ public class AwsDynamoDbVocabulary {
         }
     }
 
-    public PutItemResponse addNewVocabulary(Vocabulary vocabulary) {
-        if(vocabulary != null) {
-            try {
-                return dynamoDbClient.putItem(vocabulary.getRequest(tableName));
-            }
-            catch (DynamoDbException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-            }
+    public void putVocabulary(Vocabulary vocabulary) {
+        try {
+            dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Vocabulary.class)).putItem(vocabulary);
         }
-
-        return null;
+        catch(DynamoDbException dynamoDbException) {
+            System.out.println();
+        }
     }
 
-    public DeleteItemResponse deleteVocabulary(String name) {
-        HashMap<String, AttributeValue> mappy = new HashMap<>();
-        mappy.put("k_vocab_id", AttributeValue.builder().s(name).build());
-
-
-        DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
-                .tableName(tableName)
-                .key(mappy)
-                .build();
-        return dynamoDbClient.deleteItem(deleteItemRequest);
+    public Vocabulary deleteVocabulary(String name) {
+        try {
+            return dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Vocabulary.class))
+                    .deleteItem(Key.builder().partitionValue(name).build());
+        }
+        catch(DynamoDbException dynamoDbException) {
+            System.out.println();
+            return null;
+        }
     }
-
-
 
     public void getAllItems() {
+
 //        GetItemResponse getItemResponse = dynamoDbClient.getItem(GetItemRequest.builder()
 //                .tableName(tableName)
 //                .projectionExpression("*")
@@ -139,16 +133,15 @@ public class AwsDynamoDbVocabulary {
 
 
 
-    public GetItemResponse getVocabulary(String key) {
-        HashMap<String, AttributeValue> mappy2 = new HashMap<>();
-        mappy2.put("k_vocab_id", AttributeValue.builder().s(key).build());
-
-        GetItemRequest getItemRequest = GetItemRequest.builder()
-                .tableName(tableName)
-                .key(mappy2)
-                .build();
-
-        return dynamoDbClient.getItem(getItemRequest);
+    public Vocabulary getVocabulary(String key) {
+        try {
+            return dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Vocabulary.class))
+                    .getItem(Key.builder().partitionValue(key).build());
+        }
+        catch(DynamoDbException dynamoDbException) {
+            System.out.println();
+            return null;
+        }
     }
 
     public void addNewItem() {

@@ -1,4 +1,4 @@
-package com.holmes.aws;
+package com.holmes.aws.application;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;

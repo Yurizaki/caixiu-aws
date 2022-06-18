@@ -58,31 +58,18 @@ class AwsDynamoDbVocabularyTest {
     @Test
     public void testAddVocabularyItem_pass_if_item_add() {
         Vocabulary vocabulary = new Vocabulary("你好", "你好", "nihao");
-
-        try {
-            PutItemResponse putItemResponse = awsDynamoDbVocabulary.addNewVocabulary(vocabulary);
-            assertTrue(putItemResponse.sdkHttpResponse().isSuccessful());
-        }
-        catch (DynamoDbException ex) {
-            System.err.println(ex.getMessage());
-            System.exit(1);
-        }
+        awsDynamoDbVocabulary.putVocabulary(vocabulary);
     }
 
     @Test
     public void testDeleteVocabularyItem_pass_if_item_deleted() {
-        String name = "你好";
-        DeleteItemResponse deleteItemResponse = awsDynamoDbVocabulary.deleteVocabulary(name);
-        assertTrue(deleteItemResponse.sdkHttpResponse().isSuccessful());
+        Vocabulary vocabulary = new Vocabulary("你好", "你好", "nihao");
+        assertEquals(vocabulary, awsDynamoDbVocabulary.deleteVocabulary(vocabulary.k_vocab_id));
     }
 
     @Test
     public void testGetVocabularyItem_pass_if_item_retrieved() {
-        Vocabulary vocabulary = new Vocabulary("你好", "nihao");
-
-        GetItemResponse getItemResponse = awsDynamoDbVocabulary.getVocabulary("你好");
-
-        System.out.println(getItemResponse.item().get("pinyin"));;
+        Vocabulary vocabulary = new Vocabulary("你好", "你好", "nihao");
+        assertEquals(vocabulary, awsDynamoDbVocabulary.getVocabulary(vocabulary.k_vocab_id));
     }
-
 }

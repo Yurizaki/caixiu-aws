@@ -1,4 +1,4 @@
-package com.holmes.aws;
+package com.holmes.aws.application;
 
 import org.junit.jupiter.api.*;
 import software.amazon.awssdk.regions.Region;

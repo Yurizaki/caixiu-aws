@@ -6,25 +6,26 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @DynamoDbBean
 public class Vocabulary {
 
+    public final static String PARTITION_KEY_NAME = "k_vocab_id";
+    public final static String TABLE_NAME = "T_VOCABULARY";
+
     String k_vocab_id;
     String chinese;
     String pinyin;
+    String category;
 
-    public Vocabulary() {
-
-    }
+    /**
+     * Default constructor required for DynamoDbEnhancedClient operations.
+     */
+    public Vocabulary() { }
 
     public Vocabulary(String chinese, String pinyin) {
-        this.chinese = chinese;
-        this.pinyin = pinyin;
-    }
-
-    public Vocabulary(String k_vocab_id, String chinese, String pinyin) {
-        this.k_vocab_id = k_vocab_id;
+        this.k_vocab_id = chinese;
         this.chinese = chinese;
         this.pinyin = pinyin;
     }
@@ -54,29 +55,26 @@ public class Vocabulary {
         this.pinyin = pinyin;
     }
 
-    public PutItemRequest getRequest(String table) {
-        HashMap<String, AttributeValue> mappy = new HashMap<>();
-        mappy.put("k_vocab_id", AttributeValue.builder().s(this.chinese).build());
-        mappy.put("chinese", AttributeValue.builder().s(this.chinese).build());
-        mappy.put("pinyin", AttributeValue.builder().s(this.pinyin).build());
+    public String getCategory() {
+        return category;
+    }
 
-        return PutItemRequest.builder()
-                .tableName(table)
-                .item(mappy)
-                .build();
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @Override
     public String toString() {
-        return "{" + this.k_vocab_id + ", " + this.chinese + ", " + this.pinyin + "}";
+        return "{" + this.getChinese() + ", " + this.getPinyin() + "}";
     }
 
     @Override
     public boolean equals(Object obj) {
         if(obj.getClass() == Vocabulary.class) {
             Vocabulary vocabularyCompare = (Vocabulary) obj;
-            return this.chinese.equals(vocabularyCompare.chinese)
-                    && this.pinyin.equals(vocabularyCompare.pinyin);
+
+            return this.getChinese().equals(vocabularyCompare.getChinese())
+                    && this.getPinyin().equals(vocabularyCompare.getPinyin());
         }
         return false;
     }

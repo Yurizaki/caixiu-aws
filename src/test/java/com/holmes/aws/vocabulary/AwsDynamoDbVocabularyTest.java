@@ -11,6 +11,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,5 +64,13 @@ class AwsDynamoDbVocabularyTest {
     public void testGetVocabularyItem_pass_if_item_retrieved() {
         Vocabulary vocabulary = new Vocabulary("你好", "nihao");
         assertEquals(vocabulary, awsDynamoDbVocabulary.getVocabulary(vocabulary.getK_vocab_id()));
+    }
+
+    @Test
+    public void testBatchPutVocabulary_pass_if_items_added() {
+        Vocabulary vocabulary = new Vocabulary("好", "hao");
+        Vocabulary vocabulary2 = new Vocabulary("不错", "bu cuo");
+
+        awsDynamoDbVocabulary.putBatchItem(Arrays.asList(vocabulary, vocabulary2));
     }
 }

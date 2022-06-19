@@ -2,11 +2,6 @@ package com.holmes.aws.vocabulary;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @DynamoDbBean
 public class Vocabulary {

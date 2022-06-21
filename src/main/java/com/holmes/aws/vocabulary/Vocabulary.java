@@ -9,10 +9,10 @@ public class Vocabulary {
     public final static String PARTITION_KEY_NAME = "k_vocab_id";
     public final static String TABLE_NAME = "T_VOCABULARY";
 
-    String k_vocab_id;
-    String chinese;
-    String pinyin;
-    String category;
+    private String k_vocab_id;
+    private String chinese;
+    private String pinyin;
+    private VocabularyCategory category;
 
     /**
      * Default constructor required for DynamoDbEnhancedClient operations.
@@ -23,6 +23,11 @@ public class Vocabulary {
         this.k_vocab_id = chinese;
         this.chinese = chinese;
         this.pinyin = pinyin;
+    }
+
+    public Vocabulary(String chinese, String pinyin, VocabularyCategory category) {
+        this(chinese, pinyin);
+        this.category = category;
     }
 
     @DynamoDbPartitionKey
@@ -50,17 +55,17 @@ public class Vocabulary {
         this.pinyin = pinyin;
     }
 
-    public String getCategory() {
+    public VocabularyCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(VocabularyCategory category) {
         this.category = category;
     }
 
     @Override
     public String toString() {
-        return "{" + this.getChinese() + ", " + this.getPinyin() + "}";
+        return "{" + this.getChinese() + ", " + this.getPinyin() + ", " + this.getCategory() + "}";
     }
 
     @Override
@@ -69,7 +74,8 @@ public class Vocabulary {
             Vocabulary vocabularyCompare = (Vocabulary) obj;
 
             return this.getChinese().equals(vocabularyCompare.getChinese())
-                    && this.getPinyin().equals(vocabularyCompare.getPinyin());
+                    && this.getPinyin().equals(vocabularyCompare.getPinyin())
+                    && this.getCategory().equals(vocabularyCompare.getCategory());
         }
         return false;
     }
